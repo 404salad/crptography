@@ -49,16 +49,30 @@ def preprocess(ip: str)->str:
 
 def split_into_twos(ip: str):
     n = len(ip)
-    for i in range(0,n-1):
-        if ip[i] == ip[i+1]:
-            ip = ip[0:i+1] + filler + ip[i+1:]
+    op = ""
+    i = 0
+    while i<n:
+        if i+1<n:
+            if ip[i] == ip[i+1]:
+                op+=ip[i]
+                op+=filler
+                i+=1
+            else:
+                op+=ip[i]
+                op+=ip[i+1]
+                i+=2
+        else:
+            op += ip[i]
+            op += filler
+            i += 1
+
     if len(ip)%2 != 0:
         ip+=filler
     n = len(ip)
-    op = []
+    op1 = []
     for i in range(0,n,2):
-        op.append(ip[i]+ip[i+1])
-    return op
+        op1.append(ip[i]+ip[i+1])
+    return op1
 
 def cipher(twos):
     op = ""

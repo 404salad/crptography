@@ -3,92 +3,34 @@ import socket
 s = socket.socket()
 s.connect(("127.0.0.1", 12345))
 
-alphabet = "abcdefghiklmnopqrstuvwxyz"# without j
-keyword = "monarchy"
-filler = 'x'
+alpha = "abcdefghijklmnopqrstuvwxyz"
+keyword = "deceptive"
 
-def create_grid():
-    grid = [ [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0] ]
-    print(grid)
-    k1 = 0 
-    k2 = 0 
-    for i in range(5):
-        for j in range(5):
-            if k1<len(keyword):
-                grid[i][j] = keyword[k1]
-                k1+=1
-            elif alphabet[k2] in keyword:
-                while alphabet[k2] in keyword:
-                    k2+=1
-                grid[i][j] = alphabet[k2]
-                k2+=1
-            else:
-                grid[i][j] = alphabet[k2]
-                k2+=1
-    return grid
-    
-grid = create_grid()
-print(grid)
-
-def find_grid(a): # takes a letter return pos
-    for i,row in enumerate(grid):
-        if a in row:
-            return i,row.index(a)
-
-def preprocess(ip: str)->str:
-    """remove space and add replace j with i"""
+def vcipher(ip: str) -> str:
     op = ""
-    for x in ip:
-        if x==" ":
-            pass
-        elif x=='j':
-            op+='i'
-        else:
-            op += x
+    i = 0
+    k = len(keyword)
+    for e in ip:
+        op += alpha[(alpha.find(e) + alpha.find(keyword[i%k])) % 26]
+        i+=1
     return op
 
-def split_into_twos(ip: str):
-    n = len(ip)
-    for i in range(0,n-1):
-        if ip[i] == ip[i+1]:
-            ip = ip[0:i+1] + filler + ip[i+1:]
-    if len(ip)%2 != 0:
-        ip+=filler
-    n = len(ip)
-    op = []
-    for i in range(0,n,2):
-        op.append(ip[i]+ip[i+1])
-    return op
-
-def cipher(twos):
+def vdecipher(ip: str) -> str:
     op = ""
-    for pair in twos:
-        xy1 = find_grid(pair[0])
-        xy2 = find_grid(pair[1])
-        op += grid[xy1[0]][xy2[1]] + grid[xy2[0]][xy1[1]]
-    return op
-
-def decipher(twos):
-    op = ""
-    for pair in twos:
-        xy1 = find_grid(pair[0])
-        xy2 = find_grid(pair[1])
-        op += grid[xy1[0]][xy2[1]] + grid[xy2[0]][xy1[1]]
+    i = 0
+    k = len(keyword)
+    for e in ip:
+        op += alpha[(alpha.find(e) - alpha.find(keyword[i%k])) % 26]
+        i+=1
     return op
 
 while True: 
     incoming = s.recv(1024).decode()
-    twos_in = split_into_twos(incoming)
-    op = decipher(twos_in)
+    op = vdecipher(incoming)
     print(op)
 
     outgoing = input("enter message >")
-    pre_text = preprocess(outgoing)
-    #print(pre_text,"<- preprocessed text")
-    twos = split_into_twos(pre_text)
-    #print(twos,"<-split text")
-    ciphered = cipher(twos)
-    #print(ciphered)
+    ciphered = vcipher(outgoing)
     s.send(ciphered.encode())
 
 s.close()
