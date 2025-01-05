@@ -24,12 +24,21 @@ def vdecipher(ip: str) -> str:
         i+=1
     return op
 
+def preprocess(ip: str)->str:
+    """remove space """
+    op = ""
+    for x in ip:
+        if x==" ":
+            pass
+        else:
+            op += x
+    return op
+
 while True: 
     incoming = s.recv(1024).decode()
     op = vdecipher(incoming)
     print(op)
-
-    outgoing = input("enter message >")
+    outgoing = preprocess(input("enter message >"))
     ciphered = vcipher(outgoing)
     s.send(ciphered.encode())
 

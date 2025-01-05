@@ -85,7 +85,6 @@ def hill(ip:str)->str:
     words = []
     for i in range(0,len(ip),3):
         words.append(ip[i:i+3])
-    print(words)
     for word in words:
         for col in range(3):
             wordsum = 0
@@ -100,7 +99,6 @@ def de_hill(ip:str)->str:
     words = []
     for i in range(0,len(ip),3):
         words.append(ip[i:i+3])
-    print(words)
     for word in words:
         for col in range(3):
             wordsum = 0
